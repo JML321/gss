@@ -95,7 +95,7 @@ def update_subsegment(segment):
 def update_output(segment, sub_segment, start_year, end_year, num_rows):
     filename = segment_files[segment]
     print(f"Loading data from file: {filename}")
-    df = pd.read_csv(f"../own_data_objects/melted_tables/{filename}")
+    df = pd.read_csv(f"own_data_objects/melted_tables/{filename}")
     print(f"Data loaded, performing year comparison for years {start_year} and {end_year}")
     df = compare_years_delta(df, int(start_year), int(end_year))
     return dbc.Table.from_dataframe(df.head(num_rows), striped=True, bordered=True, hover=True, className='table')
