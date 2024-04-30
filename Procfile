@@ -1,3 +1,1 @@
-git add Procfile
-git commit -m "Add correct Procfile"
-git push heroku master
+web: gunicorn code.dashboard:app
