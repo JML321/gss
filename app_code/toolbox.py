@@ -249,3 +249,8 @@ def parse2(label):
             if line.startswith(label + " "):  # Check if the line starts with the label followed by a space
                 return line.strip().split(' ', 1)[1]  # Split the line at the first space and return the description part
     return None  # Return None if label is not found
+
+def unpickle(path):
+    with open(path, 'rb') as file:
+        data = pickle.load(file)
+    return data

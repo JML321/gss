@@ -1,0 +1,82 @@
+/* style.css */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f4f9;
+}
+
+h1 {
+    text-align: center;
+    margin-top: 20px;
+    color: #333;
+}
+
+.container {
+    margin-top: 20px;
+}
+
+.dropdown {
+    width: 100%;
+}
+
+.input-number {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.table {
+    margin-top: 20px;
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: rgba(0,0,0,.05);
+}
+
+.table-hover tbody tr:hover {
+    background-color: rgba(220, 220, 220, 0.8);
+}
+
+.table-bordered {
+    border: 1px solid #dee2e6;
+}
+
+.data-table td, .data-table th {
+    text-align: center !important;
+}
+
+/* General DataTable styling */
+.dash-spreadsheet-container .dash-cell div.dash-cell-value {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Header styling */
+.dash-spreadsheet th {
+    background-color: white;
+    font-weight: bold;
+    font-family: 'Arial', sans-serif;
+}
+
+/* Cell styling */
+.dash-spreadsheet td {
+    text-align: center;
+    padding: 10px;
+    min-width: 100px;
+    width: 100px;
+    max-width: 100px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-family: 'Arial', sans-serif;
+}
+
+/* Alternating row colors */
+.dash-spreadsheet tr:nth-child(odd) {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.dash-spreadsheet tr:nth-child(even) {
+    background-color: white;
+}
