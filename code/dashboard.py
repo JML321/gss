@@ -2,7 +2,10 @@ import dash
 from dash import dcc, html, Input, Output, callback
 import dash_bootstrap_components as dbc
 import pandas as pd
+import os
 from code.toolbox import compare_years_delta
+
+print("Starting dashboard.py...")
 
 # Define the segment and its corresponding file indices
 segment_files = {
@@ -14,6 +17,8 @@ segment_files = {
     "Race": "melted_table_5.csv"
 }
 
+print(f"Segment files: {segment_files}")
+
 # Sub-segment options based on selection
 sub_segment_options = {
     "Age": ["18-34", "35-50", "51-64", "65+"],
@@ -23,8 +28,13 @@ sub_segment_options = {
     "Race": ["White", "Black", "Other Race"]
 }
 
+print("Initializing the Dash app...")
 # Initialize the Dash app
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
+print("Dash app initialized.")
+
+# Check if app is callable (important for Gunicorn to recognize it)
+print("App is callable:", callable(app))
 
 # Define the app layout
 app.layout = dbc.Container([
@@ -74,31 +84,8 @@ app.layout = dbc.Container([
     ), width=12)),
 ], fluid=True)
 
-@callback(
-    Output('sub-segment-dropdown', 'options'),
-    Output('sub-segment-dropdown', 'value'),
-    Input('segment-dropdown', 'value')
-)
-def update_subsegment(segment):
-    print(f"Updating sub-segment dropdown for segment: {segment}")
-    options = sub_segment_options.get(segment, [])
-    return [{'label': opt, 'value': opt} for opt in options], options[0] if options else None
-
-@callback(
-    Output('table-container', 'children'),
-    [Input('segment-dropdown', 'value'),
-    Input('sub-segment-dropdown', 'value'),
-    Input('start-year-dropdown', 'value'),
-    Input('end-year-dropdown', 'value'),
-    Input('num-rows-input', 'value')]
-)
-def update_output(segment, sub_segment, start_year, end_year, num_rows):
-    filename = segment_files[segment]
-    print(f"Loading data from file: {filename}")
-    df = pd.read_csv(f"own_data_objects/melted_tables/{filename}")
-    print(f"Data loaded, performing year comparison for years {start_year} and {end_year}")
-    df = compare_years_delta(df, int(start_year), int(end_year))
-    return dbc.Table.from_dataframe(df.head(num_rows), striped=True, bordered=True, hover=True, className='table')
+print("Dash layout set up.")
 
 if __name__ == '__main__':
+    print("Running the server...")
     app.run_server(debug=True)
