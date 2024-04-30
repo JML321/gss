@@ -3,7 +3,7 @@ from dash import dcc, html, Input, Output, callback
 import dash_bootstrap_components as dbc
 import pandas as pd
 import os
-from code.toolbox import compare_years_delta
+from toolbox import compare_years_delta
 
 print("Starting dashboard.py...")
 
