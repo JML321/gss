@@ -36,6 +36,7 @@ print("Dash app initialized.")
 # Check if app is callable (important for Gunicorn to recognize it)
 print("App is callable:", callable(app))
 print("Type of app:", type(app))
+print("App.server is callable:", callable(app.server))
 print("Type of app.server:", type(app.server))
 
 
