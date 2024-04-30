@@ -35,6 +35,9 @@ print("Dash app initialized.")
 
 # Check if app is callable (important for Gunicorn to recognize it)
 print("App is callable:", callable(app))
+print("Type of app:", type(app))
+print("Type of app.server:", type(app.server))
+
 
 # Define the app layout
 app.layout = dbc.Container([
