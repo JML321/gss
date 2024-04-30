@@ -38,6 +38,7 @@ print("App is callable:", callable(app))
 print("Type of app:", type(app))
 print("App.server is callable:", callable(app.server))
 print("Type of app.server:", type(app.server))
+server = app.server
 
 
 # Define the app layout
