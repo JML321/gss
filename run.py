@@ -44,39 +44,41 @@ labels, answers = (unpickle("own_data_objects/labels.pkl"),
 # Data below sorted by biggest changes in GSS. 
 app.layout = dbc.Container([
     dbc.Row(dbc.Col(html.H1("Largest Shifts in Public Opinion: GSS Data"), width={'size': 6, 'offset': 3})),
-    dbc.Row(dbc.Col(html.H6("Largest Shifts in Public Opinion: GSS Data"), width={'size': 6, 'offset': 3})),
+    # dbc.Row(dbc.Col(html.H6("Choose demographics and timeline"), width={'size': 6, 'offset': 3})),
     dbc.Row([
         dbc.Col(
             dbc.Form([
-                dbc.Label("Segment", html_for="segment-dropdown"),
+                dbc.Label("Cohort", html_for="segment-dropdown"), # "Demographic"
                 dcc.Dropdown(
                     id='segment-dropdown',
                     options=[{'label': key, 'value': key} for key in segment_files.keys()],
                     value='Whole Country',
                     clearable=False,
                     className='dropdown',
-                    style={'width': '100%'}
+                    style={'width': dropdown_width_segment}
                 )
             ]), width=3
         ),
         dbc.Col(
             dbc.Form([
-                dbc.Label("Sub-segment", html_for="sub-segment-dropdown"),
+                dbc.Label("Subcohort", html_for="sub-segment-dropdown"),
                 dcc.Dropdown(
                     id='sub-segment-dropdown',
                     options=[],
                     value=None,
                     clearable=False,
                     className='dropdown',
-                    style={'width': '100%'}
+                    style={'width': dropdown_width_segment}
                 )
             ]), width=3, id='sub-segment-col', style={'display': 'none'}
         ),
-    ], justify='center'),
-    dbc.Row([
+
+    # ], justify='center'),
+    # dbc.Row([
+
         dbc.Col(
             dbc.Form([
-                dbc.Label("Start Year", html_for="start-year-dropdown"),
+               dbc.Label("Timeline", html_for="start-year-dropdown"),
                 dcc.Dropdown(
                     id='start-year-dropdown',
                     options=[{'label': str(year), 'value': year} for year in range(2000, 2023)
@@ -84,13 +86,13 @@ app.layout = dbc.Container([
                     value='2000',
                     clearable=False,
                     className='dropdown',
-                    style={'width': '100%', 'marginBottom': '0px'}  # Removes the bottom margin
+                    style={'width': dropdown_width, 'marginBottom': '0px'}  # Removes the bottom margin
                 )
-            ]), width=3
+            ]), width=1
         ),
         dbc.Col(
             dbc.Form([
-                dbc.Label("End Year", html_for="end-year-dropdown"),
+                dbc.Label("", html_for="end-year-dropdown"),
                 dcc.Dropdown(
                     id='end-year-dropdown',
                     options=[{'label': str(year), 'value': year} for year in range(2000, 2023)
@@ -98,7 +100,7 @@ app.layout = dbc.Container([
                     value='2022',
                     clearable=False,
                     className='dropdown',
-                    style={'width': '100%', 'marginTop': '0px'}  # Removes the top margin
+                    style={'width': dropdown_width, 'marginTop': '8px'}  # Removes the top margin
                 )
             ]), width=3
         )
@@ -166,7 +168,7 @@ def update_output(segment, sub_segment, start_year, end_year, num_rows):
     df = pd.read_csv(f"own_data_objects/melted_tables/{filename}")
     print(f"Data loaded, performing year comparison for years {start_year} and {end_year}")
     df = compare_years_delta(df, int(start_year), int(end_year))
-    df.iloc[:, -3:] = df.iloc[:, -3:] / 100
+    # df.iloc[:, -3:] = df.iloc[:, -3:] / 100
     modify_answers(df, answers)
 
     # Generate tooltip data only for the first column
@@ -178,9 +180,11 @@ def update_output(segment, sub_segment, start_year, end_year, num_rows):
     return dash_table.DataTable(
         data=df.to_dict('records'),
         columns=[
-            {'name': i, 'id': i, 'type': 'numeric', 
-             'format': Format(precision=1, scheme=Scheme.percentage)} if i in df.columns[-3:] 
-            else {'name': i, 'id': i}
+           # {
+             #   'name': i, 'id': i, 'type': 'numeric', 
+             #'format': Format(precision=1, scheme=Scheme.percentage)} if i in df.columns[-3:] 
+            # else 
+            {'name': i, 'id': i}
             for i in df.columns
         ],
         tooltip_data=tooltip_data,
@@ -212,7 +216,6 @@ def update_output(segment, sub_segment, start_year, end_year, num_rows):
         tooltip_delay=0,
         tooltip_duration=None
     )
-
 
 
 

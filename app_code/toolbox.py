@@ -88,8 +88,8 @@ def filter_dataframe(main_df, filter_df):
     filtered_df = pd.merge(main_df, filter_df, how='inner', on=['YEAR', 'Question'])
     return filtered_df
 
-# compare years to see which answers changed the most
 def compare_years_delta(df, year1, year2):
+
     # Convert 'YEAR' to float if it's not already
     df['YEAR'] = pd.to_numeric(df['YEAR'], errors='coerce')
 
@@ -124,13 +124,19 @@ def compare_years_delta(df, year1, year2):
     # Sort by delta to get the highest changes at the top
     result_df = merged_df.sort_values(by=col_name, ascending=False)
 
-    # swap third and fifth columns
+    # # swap third and fifth columns
     cols = result_df.columns.tolist()
     cols[2], cols[3], cols[4] = cols[4], cols[2], cols[3]  # Directly swap the third and fifth columns
     result_df = result_df[cols]
+    df = result_df
+    df = df.astype(str)
+    df.iloc[:, 2] = df.iloc[:, 2].apply(lambda x: f"+{float(x):.1f}%" if float(x) > 0 else f"{float(x):.1f}%")
+    df.iloc[:, 3] = df.iloc[:, 3].apply(lambda x: f"{float(x):.1f}%")
+    df.iloc[:, 4] = df.iloc[:, 4].apply(lambda x: f"{float(x):.1f}%")
+
+    return df
 
 
-    return result_df
 
 def modify_answers(df, answers):
     # Check if the expected columns are present
@@ -138,7 +144,7 @@ def modify_answers(df, answers):
         raise ValueError("DataFrame must contain 'Question' and 'Answer' columns")
 
     # Ensure the Answer column is treated as a string for consistent key comparison
-    df['Answer'] = df['Answer'].apply(lambda x: str(int(x)).strip() if pd.notna(x) else x)
+    df['Answer'] = df['Answer'].apply(lambda x: str(int(float(x))).strip() if pd.notna(x) else x)
 
     # Using apply to process each row; referencing columns by names
     def get_answer(row):
