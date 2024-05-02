@@ -118,12 +118,39 @@ def compare_years_delta(df, year1, year2):
         raise ValueError("No common Question and Answer pairs found between the two years.")
 
     # Calculate the delta in percentages
-    merged_df[f'{year2}-{year1} Delta'] = merged_df[f'{year2} Percentage'] - merged_df[f'{year1} Percentage']
+    col_name = f'Change from {year1} to {year2}'
+    merged_df[col_name] = merged_df[f'{year2} Percentage'] - merged_df[f'{year1} Percentage']
 
     # Sort by delta to get the highest changes at the top
-    result_df = merged_df.sort_values(by=f'{year2}-{year1} Delta', ascending=False)
+    result_df = merged_df.sort_values(by=col_name, ascending=False)
+
+    # swap third and fifth columns
+    cols = result_df.columns.tolist()
+    cols[2], cols[3], cols[4] = cols[4], cols[2], cols[3]  # Directly swap the third and fifth columns
+    result_df = result_df[cols]
+
 
     return result_df
+
+def modify_answers(df, answers):
+    # Check if the expected columns are present
+    if 'Question' not in df.columns or 'Answer' not in df.columns:
+        raise ValueError("DataFrame must contain 'Question' and 'Answer' columns")
+
+    # Ensure the Answer column is treated as a string for consistent key comparison
+    df['Answer'] = df['Answer'].apply(lambda x: str(int(x)).strip() if pd.notna(x) else x)
+
+    # Using apply to process each row; referencing columns by names
+    def get_answer(row):
+        question = row['Question']
+        answer = row['Answer']
+        if question in answers and answer in answers[question]:
+            return answers[question][answer]
+        return answer
+
+    df['Answer'] = df.apply(get_answer, axis=1)
+    return df
+
 
 # for getting first iteration labels and answers
 def parse_codebook(file_path):
