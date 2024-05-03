@@ -4,6 +4,15 @@ body {
     background-color: #f4f4f9;
 }
 
+/* assets/style.css */
+.custom-underline {
+    text-decoration: underline;
+    text-decoration-style: dotted;
+    text-decoration-color: blue;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 3px; /* Adjusts the underline offset from the text */
+}
+
 h1 {
     text-align: center;
     margin-top: 20px;

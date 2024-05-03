@@ -4,7 +4,7 @@ import dash_bootstrap_components as dbc
 from dash.dash_table.Format import Format, Scheme  # Correct path for Format and Scheme
 import pandas as pd
 import os
-from app_code.toolbox import compare_years_delta, unpickle, modify_answers
+from app_code.toolbox import compare_years_delta, unpickle, modify_answers, tooltip_headers
 
 print("Starting dashboard.py...")
 
@@ -28,7 +28,7 @@ sub_segment_options = {
 }
 
 # Initialize the Dash app
-app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP], title="Yo")
+app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP], title="GSS Data Analysis")
 
 # Check if app is callable (important for Gunicorn to recognize it)
 server = app.server
@@ -40,11 +40,16 @@ dropdown_width_segment, dropdown_width = '150px', '80px'
 labels, answers = (unpickle("own_data_objects/labels.pkl"),
                    unpickle("own_data_objects/answers.pkl"))
 
-# Define the app layout - Biggest Shifts in GSS Survey Over Time
+# Define the app layout - Biggest Shifts in GSS Survey Over Time/ Largest Shifts in Public Opinion: GSS Data
+# Public Opinion of USA: Sorted By Biggest Change
 # Data below sorted by biggest changes in GSS. 
 app.layout = dbc.Container([
-    dbc.Row(dbc.Col(html.H1("Largest Shifts in Public Opinion: GSS Data"), width={'size': 6, 'offset': 3})),
-    # dbc.Row(dbc.Col(html.H6("Choose demographics and timeline"), width={'size': 6, 'offset': 3})),
+    dbc.Row(dbc.Col(html.H1([
+        "How America's Beliefs Have Changed Over Time ",
+        html.Span("", style={'font-size': 'small'}),
+        html.A("Github", href="https://gss.norc.org/getthedata/Pages/SAS.aspx", 
+               target="_blank", style={'font-size': 'small'})
+    ], className="text-small"), width={'size': 6, 'offset': 3})),
     dbc.Row([
         dbc.Col(
             dbc.Form([
@@ -68,9 +73,9 @@ app.layout = dbc.Container([
                     value=None,
                     clearable=False,
                     className='dropdown',
-                    style={'width': dropdown_width_segment}
+                    style={'width': dropdown_width_segment}  # Start invisible
                 )
-            ]), width=3, id='sub-segment-col', style={'display': 'none'}
+            ]), width=3, id='sub-segment-col', style={'opacity': '0', 'pointerEvents': 'none'} #, style={'display': 'none'}
         ),
 
     # ], justify='center'),
@@ -114,7 +119,7 @@ app.layout = dbc.Container([
                 value=5,
                 min=1,
                 className='input-number',
-                style={'width': '100px'}
+                style={'width': '50px'}
             )
         ]), width=2
     )),
@@ -125,16 +130,16 @@ app.layout = dbc.Container([
     ), width=12)),
 ], fluid=True, style={'backgroundColor': '#f4f4f9'})
 
-
+    
 @callback(
     Output('sub-segment-col', 'style'),
     Input('segment-dropdown', 'value')
 )
 def toggle_subsegment(segment):
     if segment == 'Whole Country':
-        return {'display': 'none'}
+        return {'opacity': '0', 'pointerEvents': 'none'}
     else:
-        return {'display': 'block'}
+        return {'opacity': '1', 'pointerEvents': 'auto'}
 
 @callback(
     Output('sub-segment-dropdown', 'options'),
@@ -179,15 +184,12 @@ def update_output(segment, sub_segment, start_year, end_year, num_rows):
 
     return dash_table.DataTable(
         data=df.to_dict('records'),
-        columns=[
-           # {
-             #   'name': i, 'id': i, 'type': 'numeric', 
-             #'format': Format(precision=1, scheme=Scheme.percentage)} if i in df.columns[-3:] 
-            # else 
+        columns = [ 
             {'name': i, 'id': i}
-            for i in df.columns
-        ],
+             for i in df.columns
+         ],
         tooltip_data=tooltip_data,
+        tooltip_header = {i: j for i, j in zip(df.columns, tooltip_headers)},
         page_size=num_rows,
         style_table={'overflowX': 'auto'},
         style_cell={
@@ -201,16 +203,24 @@ def update_output(segment, sub_segment, start_year, end_year, num_rows):
         'textAlign': 'center',
         'backgroundColor': 'white',
         'whiteSpace': 'normal',  # Allow header texts to wrap
-        'height': 'auto' 
+        'height': 'auto' ,
+        'textDecoration': 'underline',
+        'textDecorationStyle': 'dotted',
+        'textDecorationColor': '#BEBEBE',  # D3D3D3, BEBEBE, A9A9A9, 808080, 696969
+        'textDecorationThickness': '1px'
         },
         style_data_conditional=[
-        {
+            {
             'if': {'row_index': 'odd'},
             'backgroundColor': 'rgba(250, 250, 250, 1)'
         },
         {
             'if': {'row_index': 'even'},
             'backgroundColor': 'rgba(230, 230, 230, 1)'
+        },
+        {
+                'if': {'column_id': 'Question'},
+                'color': '#68748E',  # Light blue color (Deep Sky Blue)
         }
         ],
         tooltip_delay=0,
