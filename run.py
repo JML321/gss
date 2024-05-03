@@ -1,5 +1,5 @@
 import dash
-from dash import dcc, html, Input, Output, callback, dash_table  # Import dash_table directly from dash
+from dash import dcc, html, Input, Output, State, callback, dash_table  # Import dash_table directly from dash
 import dash_bootstrap_components as dbc
 from dash.dash_table.Format import Format, Scheme  # Correct path for Format and Scheme
 import pandas as pd
@@ -116,7 +116,7 @@ app.layout = dbc.Container([
             dcc.Input(
                 id='num-rows-input',
                 type='number',
-                value=5,
+                value=7,
                 min=1,
                 className='input-number',
                 style={'width': '50px'}
