@@ -1,0 +1,19 @@
+[33mae9393ad[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmaster[m[33m, [m[1;31morigin/master[m[33m, [m[1;32mmy-changes[m[33m)[m Trying to get col 3 to have + in front of values, to show a change, not just a pure %. This draft is work in progress, in formatting stages.
+[33mf1f011f0[m Visual of table i like, i want to send to github so i can compare code to what i do with data_table
+[33me76750fa[m[33m ([m[1;31mheroku/master[m[33m)[m finally got a working copy, where path is likely going to work with heroku. Moved my main python file to the root directory, changed the name of that file, changed procfile
+[33mcdbf7c16[m changing import statement, previously code.toolbox
+[33m93d89fbf[m renamed app.server to server
+[33m65cbe138[m added callable to app.server
+[33m984797a5[m check types of app and app.server
+[33m8c19a444[m Procfile changed to app.server bc GPT said so
+[33m2ec1522b[m debugging for app to see where the issue is
+[33m08cd9aee[m Changed import statement in dashboard.py, see if that fixes the toolbox import
+[33me7443faa[m Fixed the typo, made file in code folder __init__.py, not __init_.py
+[33m1630f0cb[m added __init__.py to everything that seemed like a package, in case my code actually uses that folder, I need it to be treated like a package.
+[33m096f1557[m Change Procfile contents to proper line
+[33ma01cd920[m Changed name of procfile to Procfile
+[33m89ea83cc[m changed directory of tables in dashboard.py to recognize that code is being run from root directory, not code directory
+[33m6d745422[m Took out two lines in requirements.txt that are not linux compatible
+[33m36594b72[m adding procfile and requirements.txt mainly
+[33mc07f687a[m Removed the virtual environment
+[33mfb6f4cd8[m No files over 50MB in this bad boy

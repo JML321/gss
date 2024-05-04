@@ -5,8 +5,8 @@ import sas7bdat, signal, pyreadstat, pickle, os, re
 
 tooltip_headers = ['Hover over the question code for the full question (GSS data)', 
                    'Hover over the question code for context (GSS data)', 
-                   'Column 5 - Column 4, data table sorted by this column', 
-                   'Of respondents who answered this question in the year shown in the column header, what % had this answer', 
+                   ' ', 
+                   'Of respondents who answered this question in , what % had this answer', 
                    'Of respondents who answered this question in the year shown in the column header, what % had this answer']
 
 # given file_path that has keyword per line, convert to list

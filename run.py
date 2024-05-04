@@ -34,7 +34,20 @@ app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP], title="GS
 server = app.server
 
 # Define the width for the dropdowns
-dropdown_width_segment, dropdown_width = '150px', '80px'
+dropdown_width_segment, dropdown_width = '150px', '78px'
+
+# What Button Name Changes Too
+button_labels = [("Show More Rows", 7), ("Show All Rows", 15), ("Show 7 Rows", None)]
+
+# Attributes for dropdowns
+dropdown_layout = {
+    'Cohort': {'size': 2, 'offset': 3},    # Uses columns 3-4
+    'Subcohort': {'size': 2, 'offset': 0}, # Centers it more effectively, uses columns 6-7
+    'Timeline': {'size': 1, 'offset': 0},  # Uses columns 9-10
+    'End Year': {'size': 2, 'offset': 0}   # Close to Timeline, uses columns 11-12
+}
+
+
 
 # Get values for hovering over first two columns
 labels, answers = (unpickle("own_data_objects/labels.pkl"),
@@ -46,83 +59,79 @@ labels, answers = (unpickle("own_data_objects/labels.pkl"),
 app.layout = dbc.Container([
     dbc.Row(dbc.Col(html.H1([
         "How America's Beliefs Have Changed Over Time ",
-        html.Span("", style={'font-size': 'small'}),
-        html.A("Github", href="https://gss.norc.org/getthedata/Pages/SAS.aspx", 
-               target="_blank", style={'font-size': 'small'})
+        html.Span("", style={'font-size': 'small'}) # ,
+        # html.A("Github", href="https://gss.norc.org/getthedata/Pages/SAS.aspx", 
+        #        target="_blank", style={'font-size': 'small'})
     ], className="text-small"), width={'size': 6, 'offset': 3})),
-    dbc.Row([
-        dbc.Col(
-            dbc.Form([
-                dbc.Label("Cohort", html_for="segment-dropdown"), # "Demographic"
-                dcc.Dropdown(
-                    id='segment-dropdown',
-                    options=[{'label': key, 'value': key} for key in segment_files.keys()],
-                    value='Whole Country',
-                    clearable=False,
-                    className='dropdown',
-                    style={'width': dropdown_width_segment}
-                )
-            ]), width=3
-        ),
-        dbc.Col(
-            dbc.Form([
-                dbc.Label("Subcohort", html_for="sub-segment-dropdown"),
-                dcc.Dropdown(
-                    id='sub-segment-dropdown',
-                    options=[],
-                    value=None,
-                    clearable=False,
-                    className='dropdown',
-                    style={'width': dropdown_width_segment}  # Start invisible
-                )
-            ]), width=3, id='sub-segment-col', style={'opacity': '0', 'pointerEvents': 'none'} #, style={'display': 'none'}
-        ),
-
-    # ], justify='center'),
-    # dbc.Row([
-
-        dbc.Col(
-            dbc.Form([
-               dbc.Label("Timeline", html_for="start-year-dropdown"),
-                dcc.Dropdown(
-                    id='start-year-dropdown',
-                    options=[{'label': str(year), 'value': year} for year in range(2000, 2023)
-                             if year % 2 == 0 and year != 2020 or year == 2021],
-                    value='2000',
-                    clearable=False,
-                    className='dropdown',
-                    style={'width': dropdown_width, 'marginBottom': '0px'}  # Removes the bottom margin
-                )
-            ]), width=1
-        ),
-        dbc.Col(
-            dbc.Form([
-                dbc.Label("", html_for="end-year-dropdown"),
-                dcc.Dropdown(
-                    id='end-year-dropdown',
-                    options=[{'label': str(year), 'value': year} for year in range(2000, 2023)
-                             if year % 2 == 0 and year != 2020 or year == 2021],
-                    value='2022',
-                    clearable=False,
-                    className='dropdown',
-                    style={'width': dropdown_width, 'marginTop': '8px'}  # Removes the top margin
-                )
-            ]), width=3
-        )
-    ], justify='center'),
-    dbc.Row(dbc.Col(
+dbc.Row([
+    dbc.Col(
         dbc.Form([
-            dbc.Label("Rows", html_for="num-rows-input"),
-            dcc.Input(
-                id='num-rows-input',
-                type='number',
-                value=7,
-                min=1,
-                className='input-number',
-                style={'width': '50px'}
+            dbc.Label("Cohort", html_for="segment-dropdown"),
+            dcc.Dropdown(
+                id='segment-dropdown',
+                options=[{'label': key, 'value': key} for key in segment_files.keys()],
+                value='Whole Country',
+                clearable=False,
+                className='dropdown',
+                style={'width': dropdown_width_segment}
             )
-        ]), width=2
-    )),
+        ]), width={'size': dropdown_layout['Cohort']['size'], 'offset': dropdown_layout['Cohort']['offset']}
+    ),
+    dbc.Col(
+        dbc.Form([
+            dbc.Label("Subcohort", html_for="sub-segment-dropdown"),
+            dcc.Dropdown(
+                id='sub-segment-dropdown',
+                options=[],
+                value=None,
+                clearable=False,
+                className='dropdown',
+                style={'width': dropdown_width_segment}  # Start invisible
+            )
+        ]), width={'size': dropdown_layout['Subcohort']['size'], 'offset': dropdown_layout['Subcohort']['offset']},
+        id='sub-segment-col', style={'opacity': '0', 'pointerEvents': 'none'}
+    ),
+    dbc.Col(
+        dbc.Form([
+            dbc.Label("Timeline", html_for="start-year-dropdown"),
+            dcc.Dropdown(
+                id='start-year-dropdown',
+                options=[{'label': str(year), 'value': year} for year in range(2000, 2023)
+                         if year % 2 == 0 and year != 2020 or year == 2021],
+                value='2000',
+                clearable=False,
+                className='dropdown',
+                style={'width': dropdown_width}
+            )
+        ]), width={'size': dropdown_layout['Timeline']['size'], 'offset': dropdown_layout['Timeline']['offset']}
+    ),
+    dbc.Col(
+        dbc.Form([
+            dbc.Label(" ", html_for="end-year-dropdown"),
+            dcc.Dropdown(
+                id='end-year-dropdown',
+                options=[{'label': str(year), 'value': year} for year in range(2000, 2023)
+                         if year % 2 == 0 and year != 2020 or year == 2021],
+                value='2022',
+                clearable=False,
+                className='dropdown',
+                style={'position': 'absolute', 'marginTop': '4.3px', 'marginLeft': '-2px', 'width': dropdown_width}  # Positions dropdown absolutely within the form
+            )
+        ]), width={'size': dropdown_layout['End Year']['size'], 'offset': dropdown_layout['End Year']['offset']}
+    )
+    ], justify='start'),  # Adjusted justify to 'start' to align items to the left as per your previous feedback
+
+    dbc.Row(dbc.Col(
+    dbc.Form([
+        dbc.Button(button_labels[0][0], id="row-button", className="me-2", n_clicks=0,
+                   style={
+                       'backgroundColor': '#f8f9fa',  # A light grey color
+                       'color': '#495057',  # A dark grey text color
+                       'fontSize': 'small',  # Smaller text
+                       'border': '1px solid #ced4da'  # Add border if necessary
+                   })
+    ]), width=4
+)),
     dbc.Row(dbc.Col(dcc.Loading(
         id="loading-output",
         type="default",
@@ -151,80 +160,72 @@ def update_subsegment(segment):
     options = sub_segment_options.get(segment, [])
     return [{'label': opt, 'value': opt} for opt in options], options[0] if options else None
 
+# Adjust the callback function
 @callback(
-    Output('table-container', 'children'),
-    [Input('segment-dropdown', 'value'),
+    [Output('table-container', 'children'),
+     Output('row-button', 'children')],
+    [Input('row-button', 'n_clicks'),
+     Input('segment-dropdown', 'value'),
      Input('sub-segment-dropdown', 'value'),
      Input('start-year-dropdown', 'value'),
-     Input('end-year-dropdown', 'value'),
-     Input('num-rows-input', 'value')]
+     Input('end-year-dropdown', 'value')],
+    [State('row-button', 'children')]
 )
-def update_output(segment, sub_segment, start_year, end_year, num_rows):
+def update_output(n_clicks, segment, sub_segment, start_year, end_year, current_label):
+    # Determine row count and label based on button click
+    idx = n_clicks % 3
+    new_label, num_rows = button_labels[idx]
+
+    # Select the appropriate file based on segment and sub-segment
     filenames = segment_files[segment]
-    # If there are multiple files for the segment, choose based on the sub_segment
-    if isinstance(filenames, list):
-        # Find the index of the sub_segment in the options list
-        sub_index = sub_segment_options[segment].index(sub_segment)
-        filename = filenames[sub_index]
-    else:
-        filename = filenames  # Use single filename directly if not a list
+    filename = filenames[sub_segment_options[segment].index(sub_segment)] if isinstance(filenames, list) else filenames
 
     print(f"Loading data from file: {filename}")
     df = pd.read_csv(f"own_data_objects/melted_tables/{filename}")
-    print(f"Data loaded, performing year comparison for years {start_year} and {end_year}")
     df = compare_years_delta(df, int(start_year), int(end_year))
-    # df.iloc[:, -3:] = df.iloc[:, -3:] / 100
     modify_answers(df, answers)
 
     # Generate tooltip data only for the first column
-    tooltip_data = [
-        {df.columns[0]: labels.get(df.at[idx, df.columns[0]], '')}
-        for idx in df.index
-    ]
+    tooltip_data = [{df.columns[0]: labels.get(df.at[idx, df.columns[0]], '')} for idx in df.index]
+    tooltip_headers[2] = f"% in {end_year} - % in {start_year}" + tooltip_headers[2]
+    tooltip_headers[3] = f"Of respondents who answered this question in {start_year}, what % had this answer"
+    tooltip_headers[4] = f"Of respondents who answered this question in {end_year}, what % had the answer"
 
-    return dash_table.DataTable(
-        data=df.to_dict('records'),
-        columns = [ 
-            {'name': i, 'id': i}
-             for i in df.columns
-         ],
-        tooltip_data=tooltip_data,
-        tooltip_header = {i: j for i, j in zip(df.columns, tooltip_headers)},
-        page_size=num_rows,
-        style_table={'overflowX': 'auto'},
-        style_cell={
-            "text-align": "center",
-            'overflow': 'hidden',
-            'textOverflow': 'ellipsis',
-            'maxWidth': 0,
-        },
-        style_header={
-        'fontWeight': 'bold',  # Adds bold font style to headers
-        'textAlign': 'center',
-        'backgroundColor': 'white',
-        'whiteSpace': 'normal',  # Allow header texts to wrap
-        'height': 'auto' ,
-        'textDecoration': 'underline',
-        'textDecorationStyle': 'dotted',
-        'textDecorationColor': '#BEBEBE',  # D3D3D3, BEBEBE, A9A9A9, 808080, 696969
-        'textDecorationThickness': '1px'
-        },
-        style_data_conditional=[
-            {
-            'if': {'row_index': 'odd'},
-            'backgroundColor': 'rgba(250, 250, 250, 1)'
-        },
-        {
-            'if': {'row_index': 'even'},
-            'backgroundColor': 'rgba(230, 230, 230, 1)'
-        },
-        {
-                'if': {'column_id': 'Question'},
-                'color': '#68748E',  # Light blue color (Deep Sky Blue)
-        }
-        ],
-        tooltip_delay=0,
-        tooltip_duration=None
+    # Return the DataTable and the new label for the button
+    return (
+        dash_table.DataTable(
+            data=df.to_dict('records'),
+            columns=[{'name': i, 'id': i} for i in df.columns],
+            page_size=num_rows if num_rows is not None else len(df),
+            tooltip_data=tooltip_data,
+            tooltip_header={i: j for i, j in zip(df.columns, tooltip_headers)},
+            style_table={'overflowX': 'auto'},
+            style_cell={
+                "text-align": "center",
+                'overflow': 'hidden',
+                'textOverflow': 'ellipsis',
+                'maxWidth': 0,
+            },
+            style_header={
+                'fontWeight': 'bold',
+                'textAlign': 'center',
+                'backgroundColor': 'white',
+                'whiteSpace': 'normal',
+                'height': 'auto',
+                'textDecoration': 'underline',
+                'textDecorationStyle': 'dotted',
+                'textDecorationColor': '#BEBEBE',
+                'textDecorationThickness': '1px'
+            },
+            style_data_conditional=[
+                {'if': {'row_index': 'odd'}, 'backgroundColor': 'rgba(250, 250, 250, 1)'},
+                {'if': {'row_index': 'even'}, 'backgroundColor': 'rgba(230, 230, 230, 1)'},
+                {'if': {'column_id': 'Question'}, 'color': '#68748E'}
+            ],
+            tooltip_delay=0,
+            tooltip_duration=None
+        ),
+        new_label
     )
 
 
