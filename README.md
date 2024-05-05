@@ -1,4 +1,4 @@
-The following summary of this github project is broken down into two parts: Project Overview and Project Steps (Data Preparation, Website Preparation)
+This github project summary is broken down into two parts: Project Overview and Project Steps (Data Preparation, Website Preparation)
 
 I) Project Overview:
 
