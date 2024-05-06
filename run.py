@@ -1,5 +1,5 @@
 import dash
-from dash import dcc, html, Input, Output, State, callback, dash_table  # Import dash_table directly from dash
+from dash import dcc, html, Input, Output, ClientsideFunction, State, callback, dash_table  # Import dash_table directly from dash
 import dash_bootstrap_components as dbc
 from dash.dash_table.Format import Format, Scheme  # Correct path for Format and Scheme
 import pandas as pd
@@ -69,43 +69,46 @@ app.layout = dbc.Container([
     ], className="text-small"), width={'size': 6, 'offset': 3})),
 dbc.Row([
     dbc.Col(
-        dbc.Form([
-            dbc.Label("Cohort", html_for="segment-dropdown"),
+        dbc.Form([  
+            dbc.Label("Cohort", html_for="segment-dropdown", style={'font-size': '1.55vw'}),
             dcc.Dropdown(
                 id='segment-dropdown',
                 options=[{'label': key, 'value': key} for key in segment_files.keys()],
                 value=starting_name,
                 clearable=False,
-                className='dropdown',
-                style={'width': cohort_width_segment}
+                className='centered-button',
+                style={'width': '100%', 'font-size': '1.5vw', 
+                       'marginLeft': '-3px'}
             )
-        ]), width={'size': dropdown_layout['Cohort']['size'], 'offset': dropdown_layout['Cohort']['offset']}
+        ]), width={'size': dropdown_layout['Cohort']['size'], 'offset': dropdown_layout['Cohort']['offset']},
+        # xs=12, sm=6, md=4, lg=3, xl=2,
     ),
     dbc.Col(
         dbc.Form([
-            dbc.Label("Subcohort", html_for="sub-segment-dropdown"),
+            dbc.Label("Subcohort", html_for="sub-segment-dropdown", style={'font-size': '1.55vw'}),
             dcc.Dropdown(
                 id='sub-segment-dropdown',
                 options=[],
                 value=None,
                 clearable=False,
-                className='dropdown',
-                style={'width': subcohort_width_segment}  # Start invisible
+                className='dropdown', # subcohort_width_segment
+                style={'width': '100%', 'font-size': '1.5vw'}  # Start invisible
             )
         ]), width={'size': dropdown_layout['Subcohort']['size'], 'offset': dropdown_layout['Subcohort']['offset']},
         id='sub-segment-col', style={'opacity': '0', 'pointerEvents': 'none'}
     ),
     dbc.Col(
         dbc.Form([
-            dbc.Label("Timeline", html_for="start-year-dropdown"),
+            dbc.Label("Timeline", html_for="start-year-dropdown", style={'font-size': '1.55vw'}),
             dcc.Dropdown(
                 id='start-year-dropdown',
                 options=[{'label': str(year), 'value': year} for year in range(2000, 2023)
                          if year % 2 == 0 and year != 2020 or year == 2021],
                 value='2000',
                 clearable=False,
-                className='dropdown',
-                style={'width': dropdown_width}
+                className='dropdown', #dropdown_width
+                style={'width': '26%','position': 'absolute', 'marginLeft': '0px',
+                       'font-size': '1.5vw'}
             )
         ]), width={'size': dropdown_layout['Timeline']['size'], 'offset': dropdown_layout['Timeline']['offset']}
     ),
@@ -118,8 +121,10 @@ dbc.Row([
                          if year % 2 == 0 and year != 2020 or year == 2021],
                 value='2022',
                 clearable=False,
-                className='dropdown',
-                style={'position': 'absolute', 'marginTop': '4.1px', 'marginLeft': '-4px', 'width': dropdown_width}  # Positions dropdown absolutely within the form
+                className='dropdown', # dropdown_width
+                style={'position': 'absolute', 'marginTop': '4.1px', 
+                       'marginLeft': '-4px', 'width': '26%',
+                       'font-size': '1.5vw'}  # Positions dropdown absolutely within the form
             )
         ]), width={'size': dropdown_layout['End Year']['size'], 'offset': dropdown_layout['End Year']['offset']}
     )
@@ -141,6 +146,8 @@ dbc.Row([
         type="default",
         children=html.Div(id="table-container")
     ), width=12)),
+    html.Div(id='screen-width-storage', style={'display': 'none'}),
+    dcc.Interval(id='interval-component', interval=1000, n_intervals=0),
 ], fluid=True, style={'backgroundColor': '#f4f4f9'})
 
     
@@ -231,7 +238,6 @@ def update_output(n_clicks, segment, sub_segment, start_year, end_year, current_
         ),
         new_label
     )
-
 
 
 if __name__ == '__main__':
