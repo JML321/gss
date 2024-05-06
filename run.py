@@ -8,9 +8,11 @@ from app_code.toolbox import compare_years_delta, unpickle, modify_answers, tool
 
 print("Starting dashboard.py...")
 
+starting_name = "US Overview"
+
 # Define the segment and its corresponding file indices based on the new system
 segment_files = {
-    "Whole Country": "melted_table_0.csv",
+    starting_name: "melted_table_0.csv",
     "Age": ["melted_table_1.csv", "melted_table_2.csv", "melted_table_3.csv", "melted_table_4.csv"],
     "Degree": ["melted_table_5.csv", "melted_table_6.csv", "melted_table_7.csv"],
     "Partyid": ["melted_table_8.csv", "melted_table_9.csv", "melted_table_10.csv"],
@@ -34,7 +36,7 @@ app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP], title="GS
 server = app.server
 
 # Define the width for the dropdowns
-dropdown_width_segment, dropdown_width = '150px', '78px'
+cohort_width_segment, subcohort_width_segment, dropdown_width = '140px', '145px','70px'
 
 # What Button Name Changes Too
 button_labels = [("Show More Rows", 7), ("Show All Rows", 15), ("Show 7 Rows", None)]
@@ -55,10 +57,12 @@ labels, answers = (unpickle("own_data_objects/labels.pkl"),
 
 # Define the app layout - Biggest Shifts in GSS Survey Over Time/ Largest Shifts in Public Opinion: GSS Data
 # Public Opinion of USA: Sorted By Biggest Change
+# "How America's Beliefs Have Changed Over Time "
+# America's Beliefs: Sorted By Biggest Change Using GSS Data
 # Data below sorted by biggest changes in GSS. 
 app.layout = dbc.Container([
     dbc.Row(dbc.Col(html.H1([
-        "How America's Beliefs Have Changed Over Time ",
+        "Biggest Shifts in US Public Opinion Over Time",
         html.Span("", style={'font-size': 'small'}) # ,
         # html.A("Github", href="https://gss.norc.org/getthedata/Pages/SAS.aspx", 
         #        target="_blank", style={'font-size': 'small'})
@@ -70,10 +74,10 @@ dbc.Row([
             dcc.Dropdown(
                 id='segment-dropdown',
                 options=[{'label': key, 'value': key} for key in segment_files.keys()],
-                value='Whole Country',
+                value=starting_name,
                 clearable=False,
                 className='dropdown',
-                style={'width': dropdown_width_segment}
+                style={'width': cohort_width_segment}
             )
         ]), width={'size': dropdown_layout['Cohort']['size'], 'offset': dropdown_layout['Cohort']['offset']}
     ),
@@ -86,7 +90,7 @@ dbc.Row([
                 value=None,
                 clearable=False,
                 className='dropdown',
-                style={'width': dropdown_width_segment}  # Start invisible
+                style={'width': subcohort_width_segment}  # Start invisible
             )
         ]), width={'size': dropdown_layout['Subcohort']['size'], 'offset': dropdown_layout['Subcohort']['offset']},
         id='sub-segment-col', style={'opacity': '0', 'pointerEvents': 'none'}
@@ -115,7 +119,7 @@ dbc.Row([
                 value='2022',
                 clearable=False,
                 className='dropdown',
-                style={'position': 'absolute', 'marginTop': '4.3px', 'marginLeft': '-2px', 'width': dropdown_width}  # Positions dropdown absolutely within the form
+                style={'position': 'absolute', 'marginTop': '4.1px', 'marginLeft': '-4px', 'width': dropdown_width}  # Positions dropdown absolutely within the form
             )
         ]), width={'size': dropdown_layout['End Year']['size'], 'offset': dropdown_layout['End Year']['offset']}
     )
@@ -145,7 +149,7 @@ dbc.Row([
     Input('segment-dropdown', 'value')
 )
 def toggle_subsegment(segment):
-    if segment == 'Whole Country':
+    if segment == starting_name:
         return {'opacity': '0', 'pointerEvents': 'none'}
     else:
         return {'opacity': '1', 'pointerEvents': 'auto'}
@@ -187,7 +191,7 @@ def update_output(n_clicks, segment, sub_segment, start_year, end_year, current_
 
     # Generate tooltip data only for the first column
     tooltip_data = [{df.columns[0]: labels.get(df.at[idx, df.columns[0]], '')} for idx in df.index]
-    tooltip_headers[2] = f"% in {end_year} - % in {start_year}" + tooltip_headers[2]
+    tooltip_headers[2] = f"% in {end_year} - % in {start_year}" 
     tooltip_headers[3] = f"Of respondents who answered this question in {start_year}, what % had this answer"
     tooltip_headers[4] = f"Of respondents who answered this question in {end_year}, what % had the answer"
 
