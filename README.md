@@ -1,10 +1,14 @@
-This github project summary is broken down into two parts: Project Overview and Project Steps (Data Preparation, Website Preparation)
+This github project summary is broken down into three parts: Motivating Questions, Project Overview and Project Steps (Data Preparation, Website Preparation)
 
-I) Project Overview:
+I) Motivating Questions:
+
+Which issues has America shifted most on over any period between 2000 and 2022, and by how much? How do those issues change as different demographic cohorts are considered?
+
+II) Project Overview:
 
 Many [commentators](url) have observed significant shifts in America's views on issues such as abortion over the last two decades. This project aims to explore broader trends by identifying which issues have seen the most significant changes in public opinion. An interactive website has been developed to showcase these changes, allowing users to select different demographics and time periods for analysis. The data, sourced from the General Social Survey (GSS), benefits from rigorous collection methods: trained pollsters, compensated participants, in-person surveys, and sessions lasting over an hour, ensuring reliability and depth.
 
-II) Project Steps:
+III) Project Steps:
 
 a) Data Preparation
 
