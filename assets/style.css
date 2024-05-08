@@ -4,6 +4,15 @@ body {
     background-color: #f4f4f9;
 }
 
+ .hide-arrow .Select-arrow-zone{
+    display: none !important;
+}
+
+/* Hide the dropdown arrow */
+.show-arrow  .Select-arrow-zone {
+    margin-top: 0px; 
+  }
+
 /* assets/style.css */
 .custom-underline {
     text-decoration: underline;

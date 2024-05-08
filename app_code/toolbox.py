@@ -135,8 +135,8 @@ def compare_years_delta(df, year1, year2):
     cols[2], cols[3], cols[4] = cols[4], cols[2], cols[3]  # Directly swap the third and fifth columns
     result_df = result_df[cols]
     df = result_df
-    df = df.astype(str)
-    df.iloc[:, 2] = df.iloc[:, 2].apply(lambda x: f"+{float(x):.1f}%" if float(x) > 0 else f"{float(x):.1f}%")
+    df = df.astype(str) # ↓
+    df.iloc[:, 2] = df.iloc[:, 2].apply(lambda x: f"↑ {abs(float(x)):.1f}%" if float(x) > 0 else f"↓ {abs(float(x)):.1f}%")
     df.iloc[:, 3] = df.iloc[:, 3].apply(lambda x: f"{float(x):.1f}%")
     df.iloc[:, 4] = df.iloc[:, 4].apply(lambda x: f"{float(x):.1f}%")
 

@@ -37,6 +37,8 @@ server = app.server
 
 # Define the width for the dropdowns
 cohort_width_segment, subcohort_width_segment, dropdown_width = '140px', '145px','70px'
+font_size = '1.5vw'
+footer_size = '13px'
 
 # What Button Name Changes Too
 button_labels = [("Show More Rows", 7), ("Show All Rows", 15), ("Show 7 Rows", None)]
@@ -61,75 +63,91 @@ labels, answers = (unpickle("own_data_objects/labels.pkl"),
 # America's Beliefs: Sorted By Biggest Change Using GSS Data
 # Data below sorted by biggest changes in GSS. 
 app.layout = dbc.Container([
+
+    # detect when tooltip has been activated
+    # html.Div(id='tooltip-store', style={'display': 'none'}),
+    html.Div([
+        dcc.Input(id='tooltip-store', type='hidden', value='0')
+    ]),
+
+    # Header
     dbc.Row(dbc.Col(html.H1([
         "Biggest Shifts in US Public Opinion Over Time",
-        html.Span("", style={'font-size': 'small'}) # ,
+        html.Span("", style={'fontSize': 'small'}) # ,
         # html.A("Github", href="https://gss.norc.org/getthedata/Pages/SAS.aspx", 
         #        target="_blank", style={'font-size': 'small'})
     ], className="text-small"), width={'size': 6, 'offset': 3})),
-dbc.Row([
-    dbc.Col(
-        dbc.Form([  
-            dbc.Label("Cohort", html_for="segment-dropdown", style={'font-size': '1.55vw'}),
-            dcc.Dropdown(
-                id='segment-dropdown',
-                options=[{'label': key, 'value': key} for key in segment_files.keys()],
-                value=starting_name,
-                clearable=False,
-                className='centered-button',
-                style={'width': '100%', 'font-size': '1.5vw', 
-                       'marginLeft': '-3px'}
-            )
-        ]), width={'size': dropdown_layout['Cohort']['size'], 'offset': dropdown_layout['Cohort']['offset']},
-        # xs=12, sm=6, md=4, lg=3, xl=2,
-    ),
-    dbc.Col(
-        dbc.Form([
-            dbc.Label("Subcohort", html_for="sub-segment-dropdown", style={'font-size': '1.55vw'}),
-            dcc.Dropdown(
-                id='sub-segment-dropdown',
-                options=[],
-                value=None,
-                clearable=False,
-                className='dropdown', # subcohort_width_segment
-                style={'width': '100%', 'font-size': '1.5vw'}  # Start invisible
-            )
-        ]), width={'size': dropdown_layout['Subcohort']['size'], 'offset': dropdown_layout['Subcohort']['offset']},
-        id='sub-segment-col', style={'opacity': '0', 'pointerEvents': 'none'}
-    ),
-    dbc.Col(
-        dbc.Form([
-            dbc.Label("Timeline", html_for="start-year-dropdown", style={'font-size': '1.55vw'}),
-            dcc.Dropdown(
-                id='start-year-dropdown',
-                options=[{'label': str(year), 'value': year} for year in range(2000, 2023)
-                         if year % 2 == 0 and year != 2020 or year == 2021],
-                value='2000',
-                clearable=False,
-                className='dropdown', #dropdown_width
-                style={'width': '26%','position': 'absolute', 'marginLeft': '0px',
-                       'font-size': '1.5vw'}
-            )
-        ]), width={'size': dropdown_layout['Timeline']['size'], 'offset': dropdown_layout['Timeline']['offset']}
-    ),
-    dbc.Col(
-        dbc.Form([
-            dbc.Label(" ", html_for="end-year-dropdown"),
-            dcc.Dropdown(
-                id='end-year-dropdown',
-                options=[{'label': str(year), 'value': year} for year in range(2000, 2023)
-                         if year % 2 == 0 and year != 2020 or year == 2021],
-                value='2022',
-                clearable=False,
-                className='dropdown', # dropdown_width
-                style={'position': 'absolute', 'marginTop': '4.1px', 
-                       'marginLeft': '-4px', 'width': '26%',
-                       'font-size': '1.5vw'}  # Positions dropdown absolutely within the form
-            )
-        ]), width={'size': dropdown_layout['End Year']['size'], 'offset': dropdown_layout['End Year']['offset']}
-    )
-    ], justify='start'),  # Adjusted justify to 'start' to align items to the left as per your previous feedback
 
+    # Four buttons
+    dbc.Row([
+        dbc.Col(
+            dbc.Form([  
+                dbc.Label("Cohort", html_for="segment-dropdown", style={'fontSize': '1.55vw'}),
+                dcc.Dropdown(
+                    id='segment-dropdown',
+                    options=[{'label': key, 'value': key} for key in segment_files.keys()],
+                    value=starting_name,
+                    clearable=False,
+                    searchable=False,
+                    style={'width': '100%', 'fontSize': font_size, 
+                        'marginLeft': '-3px'}
+                )
+            ]), width={'size': dropdown_layout['Cohort']['size'], 
+                       'offset': dropdown_layout['Cohort']['offset']},
+        ),
+        dbc.Col(
+            dbc.Form([
+                dbc.Label("Subcohort", html_for="sub-segment-dropdown", style={'fontSize': '1.55vw'}),
+                dcc.Dropdown(
+                    id='sub-segment-dropdown',
+                    options=[],
+                    value=None,
+                    clearable=False,
+                    className = 'show-arrow',
+                    searchable=False,
+                    style={'width': '100%', 
+                    'fontSize': font_size}  
+                )
+            ]), width={'size': dropdown_layout['Subcohort']['size'], 
+                       'offset': dropdown_layout['Subcohort']['offset']},
+                id='sub-segment-col', 
+                style={'opacity': '0', 'pointerEvents': 'none', 'marginLeft': '-50px'}
+        ),
+        dbc.Col(
+            dbc.Form([
+                dbc.Label("Timeline", html_for="start-year-dropdown", style={'fontSize': '1.55vw'}),
+                dcc.Dropdown(
+                    id='start-year-dropdown',
+                    options=[{'label': str(year), 'value': year} for year in range(2000, 2023)
+                            if year % 2 == 0 and year != 2020 or year == 2021],
+                    value='2000',
+                    clearable=False,
+                    className='dropdown', #dropdown_width
+                    style={'width': '26%','position': 'absolute', 'marginLeft': '0px',
+                        'fontSize': font_size}
+                )
+            ]), width={'size': dropdown_layout['Timeline']['size'], 
+                       'offset': dropdown_layout['Timeline']['offset']}
+        ),
+        dbc.Col(
+            dbc.Form([
+                dbc.Label(" ", html_for="end-year-dropdown"),
+                dcc.Dropdown(
+                    id='end-year-dropdown',
+                    options=[{'label': str(year), 'value': year} for year in range(2000, 2023)
+                            if year % 2 == 0 and year != 2020 or year == 2021],
+                    value='2022',
+                    clearable=False,
+                    className='dropdown', # dropdown_width
+                    style={'position': 'absolute', 'marginTop': '4.1px', 
+                        'marginLeft': '-4px', 'width': '26%',
+                        'fontSize': font_size}  # Positions dropdown absolutely within the form
+                )
+            ]), width={'size': dropdown_layout['End Year']['size'], 'offset': dropdown_layout['End Year']['offset']}
+        )
+        ], justify='start'),  # Adjusted justify to 'start' to align items to the left as per your previous feedback
+
+    # Button that each time click, different thing shows. Controls rows
     dbc.Row(dbc.Col(
     dbc.Form([
         dbc.Button(button_labels[0][0], id="row-button", className="me-2", n_clicks=0,
@@ -138,39 +156,75 @@ dbc.Row([
                        'color': '#495057',  # A dark grey text color
                        'fontSize': 'small',  # Smaller text
                        'border': '1px solid #ced4da'  # Add border if necessary
-                   })
-    ]), width=4
-)),
+                    })
+        ]), width=4, 
+    ), style={'marginTop': '5px'}),
+
+    # Creating a Table
     dbc.Row(dbc.Col(dcc.Loading(
         id="loading-output",
         type="default",
         children=html.Div(id="table-container")
     ), width=12)),
+
+    # For JavaScript to manipulate styles based on screen width
     html.Div(id='screen-width-storage', style={'display': 'none'}),
     dcc.Interval(id='interval-component', interval=1000, n_intervals=0),
+
+    # Footer
+    dbc.Row(
+        dbc.Col(
+            html.Footer(
+                [
+                    "Data Source: ",
+                    html.A("GSS", href="https://gss.norc.org/getthedata/Pages/SAS.aspx", style={'fontSize': footer_size}),
+                ],
+                style={'fontSize': footer_size}
+            ),
+            width=12
+        )
+    )
+
 ], fluid=True, style={'backgroundColor': '#f4f4f9'})
 
-    
+
+
+
+# Callback to manage sub-segment dropdown
 @callback(
-    Output('sub-segment-col', 'style'),
-    Input('segment-dropdown', 'value')
+        Output('sub-segment-dropdown', 'className'),
+        Output('sub-segment-dropdown', 'disabled'),
+        Input('segment-dropdown', 'value')
+    )
+def update_subsegment_dropdown(segment):
+        if segment == starting_name:
+            return 'hide-arrow', True
+        else:
+            return 'show-arrow', False
+
+# Single callback to handle both the visibility and options of the sub-segment dropdown
+@callback(
+    [
+        Output('sub-segment-col', 'style'),  # Adjusts the visibility of the column
+        Output('sub-segment-dropdown', 'options'),  # Adjusts the options in the dropdown
+        Output('sub-segment-dropdown', 'value'),
+    ],
+    [Input('segment-dropdown', 'value')]  # Triggered by changes in the cohort dropdown
 )
-def toggle_subsegment(segment):
+def update_subsegment_visibility_and_options(segment):
     if segment == starting_name:
-        return {'opacity': '0', 'pointerEvents': 'none'}
+        # When the "US Overview" is selected
+        return {'opacity': '1', 'pointerEvents': 'auto'}, \
+               [{'label': '(None)', 'value': 'none'}], \
+               'none'
     else:
-        return {'opacity': '1', 'pointerEvents': 'auto'}
-
-@callback(
-    Output('sub-segment-dropdown', 'options'),
-    Output('sub-segment-dropdown', 'value'),
-    Input('segment-dropdown', 'value')
-)
-def update_subsegment(segment):
-    print(f"Updating sub-segment dropdown for segment: {segment}")
-    options = sub_segment_options.get(segment, [])
-    return [{'label': opt, 'value': opt} for opt in options], options[0] if options else None
-
+        print(f"Selected segment: {segment}")
+        # For all other segment selections
+        options = sub_segment_options.get(segment, [])
+        return {'opacity': '1', 'pointerEvents': 'auto'}, \
+               [{'label': opt, 'value': opt} for opt in options], \
+               options[0] if options else None
+    
 # Adjust the callback function
 @callback(
     [Output('table-container', 'children'),
@@ -231,7 +285,8 @@ def update_output(n_clicks, segment, sub_segment, start_year, end_year, current_
             style_data_conditional=[
                 {'if': {'row_index': 'odd'}, 'backgroundColor': 'rgba(250, 250, 250, 1)'},
                 {'if': {'row_index': 'even'}, 'backgroundColor': 'rgba(230, 230, 230, 1)'},
-                {'if': {'column_id': 'Question'}, 'color': '#68748E'}
+                # vivid_blue_colors = ['#89A3C1', '#4B9CD3', '#1E84C6', '#0086CF', '#007BFF']
+                {'if': {'column_id': 'Question'}, 'color': '#0086CF'}
             ],
             tooltip_delay=0,
             tooltip_duration=None
