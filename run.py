@@ -38,7 +38,7 @@ app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP], title="GS
 server = app.server
 
 # Define the width for the dropdowns
-big_width_segment, small_width_segment = '100%','26%'
+big_width_segment, small_width_segment = '100%','27%'
 label_size = '1.55vw'
 font_size = '1.5vw'
 footer_size = '13px'
@@ -97,7 +97,7 @@ app.layout = dbc.Container([
                     clearable=False,
                     searchable=False,
                     style={'width': big_width_segment, 'fontSize': font_size, 
-                        'marginLeft': '-3px'}
+                        'marginLeft': '-1px'}
                 )
             ]), width={'size': dropdown_layout['Cohort']['size'], 
                        'offset': dropdown_layout['Cohort']['offset']},
@@ -160,11 +160,8 @@ app.layout = dbc.Container([
         dbc.Button(button_labels[0][0], id="row-button", className="me-2", n_clicks=0,
                    style={
                        'backgroundColor': '#f8f9fa',  # A light grey color
-                       'color': '#495057',  # A dark grey text color
-                       'fontSize': 'small',  # Smaller text
                        'border': '1px solid #ced4da',  # Add border if necessary
-                       "width": "60%"
-
+                       'fontSize': "3.0vw"
                     })
         ]), width=4, 
     ), style={'marginTop': '5px'}),
@@ -208,9 +205,11 @@ def handle_tooltip_activation(n_events, n_clicks):
     # Handle case when n_events is None or not yet triggered
     first_message = "Hover Over Question or Header for More Info"
     # When n_events is 0
+    font_size_rowButton = "1.5vw"
     if n_events == 0 or n_events is None:
         return (first_message, {'backgroundColor': 'f8f9fa', 'color': 'blue', 
-                                'fontSize': 'small', "width": "70%"})
+                                'fontSize': font_size_rowButton, "width": "70%",
+                                })
 
     # When n_events is 1
     if n_events == 1:
@@ -218,12 +217,12 @@ def handle_tooltip_activation(n_events, n_clicks):
         # Start with the first label in the cycle since this is the first trigger
         label, _ = button_labels[n_clicks % len(button_labels)]
         return (label, {'backgroundColor': '#f8f9fa', 'color': '#495057', 
-                        'fontSize': 'small', 'border': '1px solid #ced4da'})
+                        'fontSize': font_size_rowButton, 'border': '1px solid #ced4da'})
 
     # For all n_events >= 1, cycle through button labels on each click
     label, _ = button_labels[n_clicks % len(button_labels)]
     return (label, {'backgroundColor': '#f8f9fa', 'color': '#495057', 
-                    'fontSize': 'small', 'border': '1px solid #ced4da'})
+                    'fontSize': font_size_rowButton, 'border': '1px solid #ced4da'})
 
 
 # Callback to manage sub-segment dropdown

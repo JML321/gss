@@ -3,3 +3,4 @@ gssenv/
 __pycache__/
 .DS_Store
 *.csv
+requirements.txt pywin*

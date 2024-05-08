@@ -12,17 +12,13 @@ document.addEventListener('DOMContentLoaded', function () {
                       tooltipDetected = true;
                   }
               });
-              // tooltip found 
+              // CONDITIONAL SEND n_clicks in - tooltip found 
               if (tooltipDetected) {
                   const inputElement = document.getElementById('tooltip-store');
                   const listenerElement = document.getElementById('tooltip-detector');  // Ensure this ID matches your layout
                       // Dispatch a custom event when a tooltip is detected
                   if (listenerElement) {
-                      var event = new CustomEvent('custom-tooltip-detected', {
-                          detail: {
-                              value: inputElement.value
-                          }
-                      });
+                      var event = new CustomEvent('custom-tooltip-detected');
                       listenerElement.dispatchEvent(event);
                       console.log("Custom event 'custom-tooltip-detected' dispatched.");
                   }
@@ -39,6 +35,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 
+var lastScreenWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
 
 // Function to check screen width and log message
 function checkScreenWidth() {
@@ -51,9 +48,12 @@ function checkScreenWidth() {
   // console.log('Screen size:', screenWidth + 'x' + screenHeight);
   
   // Check if the screen width is less than 400 pixels
-  if (screenWidth < 400) {
-    console.log('Screen width is less than 400 pixels');
+  if (lastScreenWidth > 400 && screenWidth < 400) {
+    console.log('Screen width has changed from being over 400 pixels to less than 400 pixels');
   }
+  
+  // Update lastScreenWidth with the current screenWidth for the next check
+  lastScreenWidth = screenWidth;
 }
 
 // Call the checkScreenWidth function initially to check the width on page load
