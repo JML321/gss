@@ -2,6 +2,8 @@ import dash
 from dash import dcc, html, Input, Output, ClientsideFunction, State, callback, dash_table  # Import dash_table directly from dash
 import dash_bootstrap_components as dbc
 from dash.dash_table.Format import Format, Scheme  # Correct path for Format and Scheme
+from dash_extensions import EventListener
+from dash.exceptions import PreventUpdate
 import pandas as pd
 import os
 from app_code.toolbox import compare_years_delta, unpickle, modify_answers, tooltip_headers
@@ -36,7 +38,8 @@ app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP], title="GS
 server = app.server
 
 # Define the width for the dropdowns
-cohort_width_segment, subcohort_width_segment, dropdown_width = '140px', '145px','70px'
+big_width_segment, small_width_segment = '100%','26%'
+label_size = '1.55vw'
 font_size = '1.5vw'
 footer_size = '13px'
 
@@ -66,10 +69,14 @@ app.layout = dbc.Container([
 
     # detect when tooltip has been activated
     # html.Div(id='tooltip-store', style={'display': 'none'}),
-    html.Div([
-        dcc.Input(id='tooltip-store', type='hidden', value='0')
+     html.Div([
+        dcc.Input(id='tooltip-store', type='hidden', value=-3),
+        EventListener(
+            id='tooltip-listener',
+            events=[{'event': 'custom-tooltip-detected', 'props': ['srcElement.id', 'target.id']}],
+            children=html.Div(id="tooltip-detector")  # Placeholder for the event listener
+        )
     ]),
-
     # Header
     dbc.Row(dbc.Col(html.H1([
         "Biggest Shifts in US Public Opinion Over Time",
@@ -82,14 +89,14 @@ app.layout = dbc.Container([
     dbc.Row([
         dbc.Col(
             dbc.Form([  
-                dbc.Label("Cohort", html_for="segment-dropdown", style={'fontSize': '1.55vw'}),
+                dbc.Label("Cohort", html_for="segment-dropdown", style={'fontSize': label_size}),
                 dcc.Dropdown(
                     id='segment-dropdown',
                     options=[{'label': key, 'value': key} for key in segment_files.keys()],
                     value=starting_name,
                     clearable=False,
                     searchable=False,
-                    style={'width': '100%', 'fontSize': font_size, 
+                    style={'width': big_width_segment, 'fontSize': font_size, 
                         'marginLeft': '-3px'}
                 )
             ]), width={'size': dropdown_layout['Cohort']['size'], 
@@ -97,7 +104,7 @@ app.layout = dbc.Container([
         ),
         dbc.Col(
             dbc.Form([
-                dbc.Label("Subcohort", html_for="sub-segment-dropdown", style={'fontSize': '1.55vw'}),
+                dbc.Label("Subcohort", html_for="sub-segment-dropdown", style={'fontSize': label_size}),
                 dcc.Dropdown(
                     id='sub-segment-dropdown',
                     options=[],
@@ -105,8 +112,8 @@ app.layout = dbc.Container([
                     clearable=False,
                     className = 'show-arrow',
                     searchable=False,
-                    style={'width': '100%', 
-                    'fontSize': font_size}  
+                    style={'width': big_width_segment, 
+                         'fontSize': font_size}  
                 )
             ]), width={'size': dropdown_layout['Subcohort']['size'], 
                        'offset': dropdown_layout['Subcohort']['offset']},
@@ -115,7 +122,7 @@ app.layout = dbc.Container([
         ),
         dbc.Col(
             dbc.Form([
-                dbc.Label("Timeline", html_for="start-year-dropdown", style={'fontSize': '1.55vw'}),
+                dbc.Label("Timeline", html_for="start-year-dropdown", style={'fontSize': label_size}),
                 dcc.Dropdown(
                     id='start-year-dropdown',
                     options=[{'label': str(year), 'value': year} for year in range(2000, 2023)
@@ -123,7 +130,7 @@ app.layout = dbc.Container([
                     value='2000',
                     clearable=False,
                     className='dropdown', #dropdown_width
-                    style={'width': '26%','position': 'absolute', 'marginLeft': '0px',
+                    style={'width': small_width_segment,'position': 'absolute', 'marginLeft': '0px',
                         'fontSize': font_size}
                 )
             ]), width={'size': dropdown_layout['Timeline']['size'], 
@@ -140,13 +147,13 @@ app.layout = dbc.Container([
                     clearable=False,
                     className='dropdown', # dropdown_width
                     style={'position': 'absolute', 'marginTop': '4.1px', 
-                        'marginLeft': '-4px', 'width': '26%',
+                        'marginLeft': '-4px', 'width': small_width_segment,
                         'fontSize': font_size}  # Positions dropdown absolutely within the form
                 )
             ]), width={'size': dropdown_layout['End Year']['size'], 'offset': dropdown_layout['End Year']['offset']}
         )
         ], justify='start'),  # Adjusted justify to 'start' to align items to the left as per your previous feedback
-
+    
     # Button that each time click, different thing shows. Controls rows
     dbc.Row(dbc.Col(
     dbc.Form([
@@ -155,7 +162,9 @@ app.layout = dbc.Container([
                        'backgroundColor': '#f8f9fa',  # A light grey color
                        'color': '#495057',  # A dark grey text color
                        'fontSize': 'small',  # Smaller text
-                       'border': '1px solid #ced4da'  # Add border if necessary
+                       'border': '1px solid #ced4da',  # Add border if necessary
+                       "width": "60%"
+
                     })
         ]), width=4, 
     ), style={'marginTop': '5px'}),
@@ -188,6 +197,33 @@ app.layout = dbc.Container([
 ], fluid=True, style={'backgroundColor': '#f4f4f9'})
 
 
+@app.callback(
+    Output('row-button', 'children'),
+    Output('row-button', 'style'),
+    Input('tooltip-listener', 'n_events'),
+    Input('row-button', 'n_clicks'))
+def handle_tooltip_activation(n_events, n_clicks):
+    print("handle_tooltip_activation")
+    print("n_events ", n_events)
+    # Handle case when n_events is None or not yet triggered
+    first_message = "Hover Over Question or Header for More Info"
+    # When n_events is 0
+    if n_events == 0 or n_events is None:
+        return (first_message, {'backgroundColor': 'f8f9fa', 'color': 'blue', 
+                                'fontSize': 'small', "width": "70%"})
+
+    # When n_events is 1
+    if n_events == 1:
+        # Set the stored value to n_clicks
+        # Start with the first label in the cycle since this is the first trigger
+        label, _ = button_labels[n_clicks % len(button_labels)]
+        return (label, {'backgroundColor': '#f8f9fa', 'color': '#495057', 
+                        'fontSize': 'small', 'border': '1px solid #ced4da'})
+
+    # For all n_events >= 1, cycle through button labels on each click
+    label, _ = button_labels[n_clicks % len(button_labels)]
+    return (label, {'backgroundColor': '#f8f9fa', 'color': '#495057', 
+                    'fontSize': 'small', 'border': '1px solid #ced4da'})
 
 
 # Callback to manage sub-segment dropdown
@@ -227,8 +263,7 @@ def update_subsegment_visibility_and_options(segment):
     
 # Adjust the callback function
 @callback(
-    [Output('table-container', 'children'),
-     Output('row-button', 'children')],
+     Output('table-container', 'children'),
     [Input('row-button', 'n_clicks'),
      Input('segment-dropdown', 'value'),
      Input('sub-segment-dropdown', 'value'),
@@ -240,6 +275,7 @@ def update_output(n_clicks, segment, sub_segment, start_year, end_year, current_
     # Determine row count and label based on button click
     idx = n_clicks % 3
     new_label, num_rows = button_labels[idx]
+    print(new_label)
 
     # Select the appropriate file based on segment and sub-segment
     filenames = segment_files[segment]
@@ -290,8 +326,7 @@ def update_output(n_clicks, segment, sub_segment, start_year, end_year, current_
             ],
             tooltip_delay=0,
             tooltip_duration=None
-        ),
-        new_label
+        )
     )
 
 
