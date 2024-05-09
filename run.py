@@ -71,19 +71,14 @@ app.layout = dbc.Container([
      html.Div(id='tooltip-store', style={'display': 'none'}),
      # Inside your layout definition, add this line:
      dcc.Store(id='label-index-store', data={'index': 0}),
-
+     dcc.Store(id='memory', data={'index': False}),
      html.Div([
         dcc.Input(id='store', type='hidden', value=-3),
         EventListener(
             id='tooltip-listener',
             events=[{'event': 'custom-tooltip-detected', 'props': ['srcElement.id']}],
             children=html.Div(id="tooltip-detector")  # Placeholder for the event listener
-        ),
-        EventListener(
-            id='blue-size',
-            events=[{'event': 'blue-shrink-detected', 'props': ['srcElement.id']}],
-            children=html.Div(id="blue-shr-detector")  # Placeholder for the event listener
-        ),
+        )
     ]),
     # Header
     dbc.Row(dbc.Col(html.H1([
@@ -208,16 +203,19 @@ first_message = "Hover Over Question or Header for More Info"
 @app.callback(
     [Output('row-button', 'children'),
      Output('row-button', 'style'),
-     Output('label-index-store', 'data')],  # Update store data
+     Output('label-index-store', 'data'),
+     Output('memory', 'data')],  # Update store data
     [Input('tooltip-listener', 'n_events'),
      Input('row-button', 'n_clicks')],
-    [State('label-index-store', 'data')]  # Get current index from store
+    [State('label-index-store', 'data'),
+     State('memory', 'data')]  # Get current index from store
 )
-def handle_tooltip_activation(n_events, n_clicks, store_data):
+def handle_tooltip_activation(n_events, n_clicks, store_data, memory):
     font_size_rowButton = "1.4vw"
     default_style = {'backgroundColor': 'f8f9fa', 'color': 'blue', 'fontSize': font_size_rowButton, "width": "70%"}
     first_message = "Hover Over Question or Header for More Info"
     print("n_events ", n_events)
+    memory_value = memory.get('index', False)
     trigger = dash.callback_context.triggered[0]['prop_id'].split('.')[0]
     if trigger == 'tooltip-listener' and n_events >=2:
         raise PreventUpdate
@@ -225,7 +223,7 @@ def handle_tooltip_activation(n_events, n_clicks, store_data):
     if n_events == 0 or n_events is None:
         # Reset index when no events are active
         store_data['index'] = 0
-        return (first_message, default_style, store_data)
+        return (first_message, default_style, store_data, memory)
 
     new_style = {'backgroundColor': '#f8f9fa', 'color': '#495057', 'fontSize': font_size_rowButton, 'border': '1px solid #ced4da'}
     # Extract the current index from the store data
@@ -242,7 +240,10 @@ def handle_tooltip_activation(n_events, n_clicks, store_data):
 
     # If n_clicks hasn't changed, return the current label and style
     label, _ = button_labels[current_index]
-    return (label, new_style, store_data)
+    if memory_value == False:
+        if n_events is not None and n_events >= 1 and store_data['index'] >= 1:
+            memory['index']=True
+    return (label, new_style, store_data, memory)
 
 # Callback to manage sub-segment dropdown
 @callback(
@@ -285,14 +286,24 @@ def update_subsegment_visibility_and_options(segment):
      Input('sub-segment-dropdown', 'value'),
      Input('start-year-dropdown', 'value'),
      Input('end-year-dropdown', 'value'),
-     Input('label-index-store', 'data')]
+     Input('label-index-store', 'data')],
+     [State('memory', 'data'),
+      State('tooltip-listener', 'n_events')]
 )
-def update_output(segment, sub_segment, start_year, end_year, store_data):
+def update_output(segment, sub_segment, start_year, 
+                  end_year, store_data, memory,
+                  n_events):
+    print("store_data ", store_data)
+    print("memory ", memory)
+    print("n_events ", n_events)
+    if n_events is not None and n_events != 0:
+        if memory.get('index', False) == False:
+            raise PreventUpdate
     # Determine row count and label based on button click
     trigger = dash.callback_context.triggered[0]
     trigger_id = trigger['prop_id'].split('.')[0]
-    print("trigger_id ", trigger_id)
-    print("store_data ", store_data)
+    # print("trigger_id ", trigger_id)
+    # print("store_data ", store_data)
     if trigger_id == 'row-button':
         current_index = (store_data.get('index', 0) + 1) % 3
         _, num_rows = button_labels[current_index]
@@ -302,7 +313,7 @@ def update_output(segment, sub_segment, start_year, end_year, store_data):
     filenames = segment_files[segment]
     filename = filenames[sub_segment_options[segment].index(sub_segment)] if isinstance(filenames, list) else filenames
 
-    print(f"Loading data from file: {filename}")
+    # print(f"Loading data from file: {filename}")
     df = pd.read_csv(f"own_data_objects/melted_tables/{filename}")
     df = compare_years_delta(df, int(start_year), int(end_year))
     modify_answers(df, answers)
