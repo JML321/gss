@@ -50,8 +50,8 @@ function updateLayoutBasedOnWidth() {
     const button = document.getElementById('row-button');
     
     if (button) { // Always check if button exists before applying styles
-        if (screenWidth <= 600) {
-            button.style.fontSize = "2.1vw";
+        if (screenWidth <= 500) {
+            button.style.fontSize = "2.5vw";
         } else {
             button.style.fontSize = "1.4vw";
         }
