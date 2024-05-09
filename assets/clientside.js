@@ -64,10 +64,10 @@ function updateLayoutBasedOnWidth() {
     const timeline_label = document.getElementById('Timeline');
 
     //smartphone viewing
-    const big_width_segment_s = '300%';
+    const big_width_segment_s = '180%';
     const small_width_segment_s = '50%';
-    const label_size_s = '2.55vw';
-    const font_size_s = '2.5vw';
+    const label_size_s = '2.85vw';
+    const font_size_s = '2.7vw';
     
     
     // laptop viewing
@@ -110,7 +110,7 @@ function updateLayoutBasedOnWidth() {
             // endyear sizes
             endyear.style.width = small_width_segment_s; 
             endyear.style.fontSize = font_size_s;    
-            endyear.style.marginTop = "3.4px";
+            endyear.style.marginTop = "3.1px";
             // label sizes
             cohort_label.style.fontSize = label_size_s;
             subcohort_label.style.fontSize = label_size_s;
@@ -138,7 +138,7 @@ function updateLayoutBasedOnWidth() {
             endyear.style.width = small_width_segment; 
             endyear.style.fontSize = font_size;    
             endyear.style.marginLeft = "-4px";
-            endyear.style.marginTop = '4.1px';
+            endyear.style.marginTop = '4.1px'; // 4.1
 
             cohort_label.style.fontSize = label_size;
             cohort_label.style.marginLeft = "0px";
