@@ -1,5 +1,5 @@
 import dash
-from dash import dcc, html, Input, Output, ClientsideFunction, State, callback, dash_table  # Import dash_table directly from dash
+from dash import dcc, html, Input, callback_context, Output, ClientsideFunction, State, callback, dash_table  # Import dash_table directly from dash
 import dash_bootstrap_components as dbc
 from dash.dash_table.Format import Format, Scheme  # Correct path for Format and Scheme
 from dash_extensions import EventListener
@@ -68,14 +68,19 @@ labels, answers = (unpickle("own_data_objects/labels.pkl"),
 app.layout = dbc.Container([
 
     # detect when tooltip has been activated
-    # html.Div(id='tooltip-store', style={'display': 'none'}),
+     html.Div(id='tooltip-store', style={'display': 'none'}),
      html.Div([
-        dcc.Input(id='tooltip-store', type='hidden', value=-3),
+        dcc.Input(id='store', type='hidden', value=-3),
         EventListener(
             id='tooltip-listener',
-            events=[{'event': 'custom-tooltip-detected', 'props': ['srcElement.id', 'target.id']}],
+            events=[{'event': 'custom-tooltip-detected', 'props': ['srcElement.id']}],
             children=html.Div(id="tooltip-detector")  # Placeholder for the event listener
-        )
+        ),
+        EventListener(
+            id='blue-size',
+            events=[{'event': 'blue-shrink-detected', 'props': ['srcElement.id']}],
+            children=html.Div(id="blue-shr-detector")  # Placeholder for the event listener
+        ),
     ]),
     # Header
     dbc.Row(dbc.Col(html.H1([
@@ -200,12 +205,10 @@ app.layout = dbc.Container([
     Input('tooltip-listener', 'n_events'),
     Input('row-button', 'n_clicks'))
 def handle_tooltip_activation(n_events, n_clicks):
-    print("handle_tooltip_activation")
-    print("n_events ", n_events)
     # Handle case when n_events is None or not yet triggered
     first_message = "Hover Over Question or Header for More Info"
     # When n_events is 0
-    font_size_rowButton = "1.5vw"
+    font_size_rowButton = "1.4vw"
     if n_events == 0 or n_events is None:
         return (first_message, {'backgroundColor': 'f8f9fa', 'color': 'blue', 
                                 'fontSize': font_size_rowButton, "width": "70%",
