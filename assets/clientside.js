@@ -34,9 +34,16 @@ document.addEventListener('DOMContentLoaded', function () {
 
 document.addEventListener('DOMContentLoaded', function() {
     let checkButtonInterval = setInterval(function() {
-        const button = document.getElementById('row-button');
-        console.log("this is the button ", button)
-        if (button) {
+        const blue_button = document.getElementById('row-button');
+        const cohort = document.getElementById('segment-dropdown');
+        const subcohort = document.getElementById('sub-segment-dropdown');
+        const timeline = document.getElementById('start-year-dropdown');
+        const endyear = document.getElementById('end-year-dropdown');
+        const cohort_label = document.getElementById('Cohort');
+        const subcohort_label = document.getElementById('SubCohort');
+        const timeline_label = document.getElementById('Timeline');
+        if (blue_button, cohort, subcohort, timeline, endyear, 
+            cohort_label, subcohort_label, timeline_label) {
             updateLayoutBasedOnWidth();
             clearInterval(checkButtonInterval);
         }
@@ -47,14 +54,101 @@ document.addEventListener('DOMContentLoaded', function() {
 
 function updateLayoutBasedOnWidth() {
     const screenWidth = window.innerWidth;
-    const button = document.getElementById('row-button');
+    const blue_button = document.getElementById('row-button');
+    const cohort = document.getElementById('segment-dropdown');
+    const subcohort = document.getElementById('sub-segment-dropdown');
+    const timeline = document.getElementById('start-year-dropdown');
+    const endyear = document.getElementById('end-year-dropdown');
+    const cohort_label = document.getElementById('Cohort');
+    const subcohort_label = document.getElementById('SubCohort');
+    const timeline_label = document.getElementById('Timeline');
+
+    //smartphone viewing
+    const big_width_segment_s = '300%';
+    const small_width_segment_s = '50%';
+    const label_size_s = '2.55vw';
+    const font_size_s = '2.5vw';
     
-    if (button) { // Always check if button exists before applying styles
+    
+    // laptop viewing
+    const big_width_segment = '95%';
+    const small_width_segment = '27%';
+    const label_size = '1.55vw';
+    const font_size = '1.5vw';
+
+    
+
+    
+    if (blue_button) { // Always check if button exists before applying styles
+        // phone viewing
         if (screenWidth <= 500) {
-            button.style.fontSize = "2.4vw";
-            button.style.width = "100%";
+            blue_button.style.fontSize = "2.3vw";
+            blue_button.style.width = "80%";
+            // LEFT ////////////////
+            // cohort how left
+            const cohort_left = "-20px";
+            cohort.style.marginLeft = cohort_left;
+            cohort_label.style.marginLeft = cohort_left;
+            // timeline how left
+            const timeline_left = "20px";
+            timeline.style.marginLeft = timeline_left;
+            timeline_label.style.marginLeft = timeline_left;
+            // endyear button how left
+            const endyear_left = "46px";
+            endyear.style.marginLeft = endyear_left;
+            // SIZES ////////////////
+            // cohort sizes
+            cohort.style.width = big_width_segment_s;
+            cohort.style.fontSize = font_size_s;
+            // subcohort sizes
+            subcohort.style.width = big_width_segment_s;
+            subcohort.style.fontSize = font_size_s;
+            // subcohort.style.marginLeft = "0px";
+            // timeline sizes
+            timeline.style.width = small_width_segment_s;
+            timeline.style.fontSize = font_size_s;    
+            // endyear sizes
+            endyear.style.width = small_width_segment_s; 
+            endyear.style.fontSize = font_size_s;    
+            endyear.style.marginTop = "3.4px";
+            // label sizes
+            cohort_label.style.fontSize = label_size_s;
+            subcohort_label.style.fontSize = label_size_s;
+            timeline_label.style.fontSize = label_size_s;
+
+
+
+        // laptop viewing
+        } else if (screenWidth > 500 && screenWidth <= 1100){
+            console.log("laptop viewing")
+            blue_button.style.fontSize = "1.4vw";
+
+            cohort.style.width = big_width_segment;
+            cohort.style.fontSize = font_size;
+            cohort.style.marginLeft = "0px";
+
+            subcohort.style.width = big_width_segment;
+            subcohort.style.fontSize = font_size;
+            subcohort.style.marginLeft = "0px";
+
+            timeline.style.width = small_width_segment;
+            timeline.style.fontSize = font_size;    
+            timeline.style.marginLeft = "0px";
+
+            endyear.style.width = small_width_segment; 
+            endyear.style.fontSize = font_size;    
+            endyear.style.marginLeft = "-4px";
+            endyear.style.marginTop = '4.1px';
+
+            cohort_label.style.fontSize = label_size;
+            cohort_label.style.marginLeft = "0px";
+            subcohort_label.style.fontSize = label_size;
+            subcohort_label.style.marginLeft = "0px";
+            timeline_label.style.fontSize = label_size;
+            timeline_label.style.marginLeft = "0px";
+
         } else {
-            button.style.fontSize = "1.4vw";
+            endyear.style.marginTop = '7.0px';
         }
     }
 }
@@ -66,10 +160,7 @@ function updateLayoutBasedOnWidth() {
 // function checkScreenWidth() {
 //   var screenWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
 //   var screenHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
-// //   var cohort = document.getElementById('segment-dropdown');
-// //   var subcohort = document.getElementById('sub-segment-dropdown');
-// //   var timeline = document.getElementById('start-year-dropdown');
-// //   var endyear = document.getElementById('end-year-dropdown');
+
 //   // console.log('Screen size:', screenWidth + 'x' + screenHeight);
   
 //   // Check if the screen width is less than 400 pixels

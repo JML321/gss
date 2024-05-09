@@ -94,7 +94,8 @@ app.layout = dbc.Container([
     dbc.Row([
         dbc.Col(
             dbc.Form([  
-                dbc.Label("Cohort", html_for="segment-dropdown", style={'fontSize': label_size}),
+                dbc.Label("Cohort", id="Cohort", 
+                          html_for="segment-dropdown", style={'fontSize': label_size}),
                 dcc.Dropdown(
                     id='segment-dropdown',
                     options=[{'label': key, 'value': key} for key in segment_files.keys()],
@@ -109,7 +110,8 @@ app.layout = dbc.Container([
         ),
         dbc.Col(
             dbc.Form([
-                dbc.Label("Subcohort", html_for="sub-segment-dropdown", style={'fontSize': label_size}),
+                dbc.Label("Subcohort", id="SubCohort",
+                          html_for="sub-segment-dropdown", style={'fontSize': label_size}),
                 dcc.Dropdown(
                     id='sub-segment-dropdown',
                     options=[],
@@ -127,7 +129,8 @@ app.layout = dbc.Container([
         ),
         dbc.Col(
             dbc.Form([
-                dbc.Label("Timeline", html_for="start-year-dropdown", style={'fontSize': label_size}),
+                dbc.Label("Timeline", id="Timeline",
+                          html_for="start-year-dropdown", style={'fontSize': label_size}),
                 dcc.Dropdown(
                     id='start-year-dropdown',
                     options=[{'label': str(year), 'value': year} for year in range(2000, 2023)
@@ -305,8 +308,8 @@ def update_output(n_clicks, segment, sub_segment, start_year, end_year, current_
             style_table={'overflowX': 'auto'},
             style_cell={
                 "text-align": "center",
-                'overflow': 'hidden',
-                'textOverflow': 'ellipsis',
+                'whiteSpace': 'normal',
+                'height': 'auto',
                 'maxWidth': 0,
             },
             style_header={
