@@ -51,7 +51,8 @@ function updateLayoutBasedOnWidth() {
     
     if (button) { // Always check if button exists before applying styles
         if (screenWidth <= 500) {
-            button.style.fontSize = "2.5vw";
+            button.style.fontSize = "2.4vw";
+            button.style.width = "100%";
         } else {
             button.style.fontSize = "1.4vw";
         }
