@@ -69,6 +69,9 @@ app.layout = dbc.Container([
 
     # detect when tooltip has been activated
      html.Div(id='tooltip-store', style={'display': 'none'}),
+     # Inside your layout definition, add this line:
+     dcc.Store(id='label-index-store', data={'index': 0}),
+
      html.Div([
         dcc.Input(id='store', type='hidden', value=-3),
         EventListener(
@@ -201,35 +204,45 @@ app.layout = dbc.Container([
 
 ], fluid=True, style={'backgroundColor': '#f4f4f9'})
 
-
+first_message = "Hover Over Question or Header for More Info"
 @app.callback(
-    Output('row-button', 'children'),
-    Output('row-button', 'style'),
-    Input('tooltip-listener', 'n_events'),
-    Input('row-button', 'n_clicks'))
-def handle_tooltip_activation(n_events, n_clicks):
-    # Handle case when n_events is None or not yet triggered
-    first_message = "Hover Over Question or Header for More Info"
-    # When n_events is 0
+    [Output('row-button', 'children'),
+     Output('row-button', 'style'),
+     Output('label-index-store', 'data')],  # Update store data
+    [Input('tooltip-listener', 'n_events'),
+     Input('row-button', 'n_clicks')],
+    [State('label-index-store', 'data')]  # Get current index from store
+)
+def handle_tooltip_activation(n_events, n_clicks, store_data):
     font_size_rowButton = "1.4vw"
+    default_style = {'backgroundColor': 'f8f9fa', 'color': 'blue', 'fontSize': font_size_rowButton, "width": "70%"}
+    first_message = "Hover Over Question or Header for More Info"
+    print("n_events ", n_events)
+    trigger = dash.callback_context.triggered[0]['prop_id'].split('.')[0]
+    if trigger == 'tooltip-listener' and n_events >=2:
+        raise PreventUpdate
+
     if n_events == 0 or n_events is None:
-        return (first_message, {'backgroundColor': 'f8f9fa', 'color': 'blue', 
-                                'fontSize': font_size_rowButton, "width": "70%",
-                                })
+        # Reset index when no events are active
+        store_data['index'] = 0
+        return (first_message, default_style, store_data)
 
-    # When n_events is 1
-    if n_events == 1:
-        # Set the stored value to n_clicks
-        # Start with the first label in the cycle since this is the first trigger
-        label, _ = button_labels[n_clicks % len(button_labels)]
-        return (label, {'backgroundColor': '#f8f9fa', 'color': '#495057', 
-                        'fontSize': font_size_rowButton, 'border': '1px solid #ced4da'})
+    new_style = {'backgroundColor': '#f8f9fa', 'color': '#495057', 'fontSize': font_size_rowButton, 'border': '1px solid #ced4da'}
+    # Extract the current index from the store data
+    current_index = store_data.get('index', 0)
 
-    # For all n_events >= 1, cycle through button labels on each click
-    label, _ = button_labels[n_clicks % len(button_labels)]
-    return (label, {'backgroundColor': '#f8f9fa', 'color': '#495057', 
-                    'fontSize': font_size_rowButton, 'border': '1px solid #ced4da'})
+    # Check if n_clicks has changed
+    if trigger == 'row-button':
+        # Get label and increment index
+        label, _ = button_labels[current_index]
+        current_index = (current_index + 1) % len(button_labels)  # Cycle through labels
 
+        # Update store with new index
+        store_data['index'] = current_index
+
+    # If n_clicks hasn't changed, return the current label and style
+    label, _ = button_labels[current_index]
+    return (label, new_style, store_data)
 
 # Callback to manage sub-segment dropdown
 @callback(
@@ -265,23 +278,26 @@ def update_subsegment_visibility_and_options(segment):
         return {'opacity': '1', 'pointerEvents': 'auto'}, \
                [{'label': opt, 'value': opt} for opt in options], \
                options[0] if options else None
-    
 # Adjust the callback function
 @callback(
      Output('table-container', 'children'),
-    [Input('row-button', 'n_clicks'),
-     Input('segment-dropdown', 'value'),
+    [Input('segment-dropdown', 'value'),
      Input('sub-segment-dropdown', 'value'),
      Input('start-year-dropdown', 'value'),
-     Input('end-year-dropdown', 'value')],
-    [State('row-button', 'children')]
+     Input('end-year-dropdown', 'value'),
+     Input('label-index-store', 'data')]
 )
-def update_output(n_clicks, segment, sub_segment, start_year, end_year, current_label):
+def update_output(segment, sub_segment, start_year, end_year, store_data):
     # Determine row count and label based on button click
-    idx = n_clicks % 3
-    new_label, num_rows = button_labels[idx]
-    print(new_label)
-
+    trigger = dash.callback_context.triggered[0]
+    trigger_id = trigger['prop_id'].split('.')[0]
+    print("trigger_id ", trigger_id)
+    print("store_data ", store_data)
+    if trigger_id == 'row-button':
+        current_index = (store_data.get('index', 0) + 1) % 3
+        _, num_rows = button_labels[current_index]
+    else:
+        num_rows = button_labels[store_data.get('index', 0)][1]
     # Select the appropriate file based on segment and sub-segment
     filenames = segment_files[segment]
     filename = filenames[sub_segment_options[segment].index(sub_segment)] if isinstance(filenames, list) else filenames
